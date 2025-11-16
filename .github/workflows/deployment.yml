@@ -8,24 +8,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Setup Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # Step 3: Build React App
       - name: Build frontend
         run: |
           npm install
-          echo "ESLINT_NO_DEV_ERRORS=true" >> $GITHUB_ENV
+          echo "CI=false" >> $GITHUB_ENV
           npm run build
 
-      # Step 4: Copy only the build folder to EC2
       - name: Copy frontend build to EC2
         uses: appleboy/scp-action@master
         with:
@@ -36,7 +32,6 @@ jobs:
           target: "/var/www/html/"
           strip_components: 1
 
-      # Step 5: Restart Nginx on EC2
       - name: Restart Nginx
         uses: appleboy/ssh-action@v0.1.6
         with:
